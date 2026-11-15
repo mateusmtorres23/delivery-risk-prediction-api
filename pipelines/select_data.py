@@ -18,7 +18,6 @@ def extract() -> dict[str, pd.DataFrame]:
         ("customers", "olist_customers_dataset.csv"),
         ("geolocations", "olist_geolocation_dataset.csv"),
         ("items", "olist_order_items_dataset.csv"),
-        ("payments", "olist_order_payments_dataset.csv"),
         ("orders", "olist_orders_dataset.csv"),
         ("products", "olist_products_dataset.csv"),
         ("translations", "product_category_name_translation.csv"),
@@ -51,6 +50,8 @@ def transform(
         columns=["geolocation_city", "geolocation_state"]
     )
 
+    df_items = dfs["items"].drop(columns=["shipping_limit_date"])
+
     df_orders = dfs["orders"].drop(
         columns=["order_delivered_carrier_date"]
     )
@@ -77,6 +78,7 @@ def transform(
 
     transformed_dfs["customers"] = df_customers
     transformed_dfs["geolocations"] = df_geol
+    transformed_dfs["items"] = df_items
     transformed_dfs["orders"] = df_orders
     transformed_dfs["products"] = df_products
 
@@ -88,12 +90,11 @@ def load(dfs: dict[str, pd.DataFrame]) -> None:
 
     exports: list[tuple[pd.DataFrame, str]] = [
         (dfs["customers"], "customers_dataset"),
-        (dfs["geolocations"], "geolocation_dataset"),
+        (dfs["geolocations"], "geolocations_dataset"),
         (dfs["items"], "order_items_dataset"),
-        (dfs["payments"], "payments_dataset"),
         (dfs["orders"], "orders_dataset"),
         (dfs["products"], "products_dataset"),
-        (dfs["sellers"], "seller_dataset")
+        (dfs["sellers"], "sellers_dataset")
     ]
 
     for df, stem in exports:
